@@ -51,11 +51,27 @@ F1nm1 = zeros(imax, jmax);
 F2nm1 = zeros(imax, jmax);
 F3nm1 = zeros(imax, jmax);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Coefficent Matrix
+A = eye(imax*jmax, imax*jmax);
+for i = 2 : imax-1
+    for j = 2: imax-1
+        index = (i-1) * jmax + j;
+        A(index, index) = -2 *(deltax/deltay + deltay/deltax);
+        A(index, index+1) = deltax/deltay;
+        A(index, index-1) = deltax/deltay;
+        A(index, index+jmax) = deltay/deltax;
+        A(index, index-jmax) = deltay/deltax;
+    end
+end
+
 
 % Time Iteration
 t_sim = 0;
 itr_max = 10;
 deltat = 1e-5;
+tol = 1e-5;
+gs_itr_max = 1e6;
 for itr = 0:itr_max
     % Left Wall (Wall with Constant Temperature T_H)
     un(1,:) = 0;
@@ -134,22 +150,26 @@ for itr = 0:itr_max
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
-    A = zeros(imax*jmax, imax*jmax);
+    % 
     b = zeros(imax*jmax, 1);
-    x = zeros(imax*jmax, 1);
+    x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
         for j = 2: imax-1
             index = (i-1) * jmax + j;
             b(index) = (u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax;
-            A(index, index) = -2 *(deltax/deltay + deltay/deltax);
-            A(index+1, index)
-            A(index, index)
         end
     end
+
+    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    for i = 2 : imax-1
+        for j = 2: imax-1
+            index = (i-1) * jmax + j;
+            p_prime(i,j) = x(index);
+        end
+    end
+
     
-
-
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Correction Step
@@ -175,7 +195,8 @@ for itr = 0:itr_max
             %%%%%%%%%%%%%%%%%%%%%
             % Calculation of n+1 Values
             Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat / (deltax * deltay) + Tn(i,j);
-
+            unp1(i,j) = u_star - deltat * (p_prime(i+1,j))
+            
 
 
 
