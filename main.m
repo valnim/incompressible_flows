@@ -15,8 +15,8 @@ Re = 100;
 Pr = 1;
 
 % Initialziation of Grid
-ni = 10;           % Number of Cells in X Direction
-nj = 10;           % Number of Cells in Y Direction
+ni = 30;           % Number of Cells in X Direction
+nj = 30;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -93,9 +93,9 @@ end
 
 % Time Iteration
 t_sim = 0;
-itr_max = 10;
+itr_max = 100;
 deltat = 1e-5;
-tol = 1e-3;
+tol = 1e-2;
 gs_itr_max = 1e4;
 for itr = 0:itr_max
     % Left Wall (Wall with Constant Temperature T_H)
@@ -236,9 +236,14 @@ for itr = 0:itr_max
     F2nm1 = F2n;
     F3nm1 = F3n;
 
-    t_sim = t_sim + deltat
+    t_sim = t_sim + deltat;
+    disp(t_sim);
 
 end
+disp('finished calculation');
+Tdisp = Tn(2:imax-1, 2:jmax-1);
+Tdisp = flipud(Tdisp');
+heatmap(Tdisp, "Colormap", jet)
 
 
 
