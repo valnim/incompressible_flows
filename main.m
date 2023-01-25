@@ -51,52 +51,72 @@ F1nm1 = zeros(imax, jmax);
 F2nm1 = zeros(imax, jmax);
 F3nm1 = zeros(imax, jmax);
 
+index = @(i,j) (i-1) * jmax + j;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Coefficent Matrix
+% Coefficent Matrix for Poisson Equation
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
     for j = 2: imax-1
-        index = (i-1) * jmax + j;
-        A(index, index) = -2 *(deltax/deltay + deltay/deltax);
-        A(index, index+1) = deltax/deltay;
-        A(index, index-1) = deltax/deltay;
-        A(index, index+jmax) = deltay/deltax;
-        A(index, index-jmax) = deltay/deltax;
+        idx = index(i,j);
+        A(idx, idx) = -2 *(deltax/deltay + deltay/deltax);
+        A(idx, idx+1) = deltax/deltay;
+        A(idx, idx-1) = deltax/deltay;
+        A(idx, idx+jmax) = deltay/deltax;
+        A(idx, idx-jmax) = deltay/deltax;
+        
     end
 end
 
+% Pressure Boundaries
+for i = 2:imax-1
+    for j = 1:imax
+        if j == 1
+            A(index(i,j), index(i,j)+1) = -1;
+        elseif j == jmax
+            A(index(i,j), index(i,j)-1) = -1;
+        end
+    end
+end
+
+for i = 1:imax
+    for j = 2:imax-1
+        if i == 1
+            A(index(i,j), index(i,j)+jmax) = -1;
+        elseif i == imax
+            A(index(i,j), index(i,j)-jmax) = -1;
+        end
+
+    end
+end
+        
 
 % Time Iteration
 t_sim = 0;
 itr_max = 10;
 deltat = 1e-5;
-tol = 1e-5;
-gs_itr_max = 1e6;
+tol = 1e-3;
+gs_itr_max = 1e4;
 for itr = 0:itr_max
     % Left Wall (Wall with Constant Temperature T_H)
     un(1,:) = 0;
     vn(1,:) = - vn(2,:);
     Tn(1,:) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,:);
-    p_prime(1,:) = p_prime(2,:);
 
-    
     % Right Wall (Wall with Constant Temperature T_C)
     un(imax,:) = 0;
     vn(imax,:) = - vn(imax-1,:);
     Tn(imax,:) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,:);
-    p_prime(imax,:) = p_prime(imax-1,:);
 
     % Bottom Wall   (adiabat Wall)
     un(:,1) = - un(:,2);
     vn(:,1) = 0;
     Tn(:,1) = Tn(:,2);
-    p_prime(:,1) = p_prime(:,2);
 
     % Top Wall      (adiabat Wall)
     un(:,jmax) = - un(:,jmax-1);
     vn(:,jmax) = 0;
     Tn(:,jmax) = Tn(:,jmax-1);
-    p_prime(:,jmax) = p_prime(:,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Projection Step
@@ -199,17 +219,8 @@ for itr = 0:itr_max
             vnp1(i,j) = v_star(i,j) - deltat * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
             pnp1(i,j) = pn(i,j) + p_prime(i,j);
 
-            
-
-
-
-
         end
     end
-
-
-
-
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Change Timestep
