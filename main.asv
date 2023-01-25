@@ -54,7 +54,7 @@ F3nm1 = zeros(imax, jmax);
 
 % Time Iteration
 t_sim = 0;
-itr_max = 1;
+itr_max = 10;
 deltat = 1e-5;
 for itr = 0:itr_max
     % Left Wall (Wall with Constant Temperature T_H)
@@ -83,6 +83,7 @@ for itr = 0:itr_max
     p_prime(:,jmax) = p_prime(:,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Projection Step
     % calculation of u_star and v_star
     for i = 2 : imax-1
         for j = 2: imax-1
@@ -122,18 +123,36 @@ for itr = 0:itr_max
 
             F2n(i,j) = F2n_1 + F2n_2 + F2n_3 + F2n_4 + F2n_5 + F2n_6;
 
-            
-            
-
-
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % Prediction Step Values
 
-
-
+            u_star(i,j) = (3/2 * F1n(i,j) - 1/2 * F1nm1(i,j)) * deltat / (deltax * deltay) + un(i,j);
+            v_star(i,j) = (3/2 * F2n(i,j) - 1/2 * F2nm1(i,j)) * deltat / (deltax * deltay) + vn(i,j);
         end
     end
+    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Poisson Solver
+    A = zeros(imax*jmax, imax*jmax);
+    b = zeros(imax*jmax, 1);
+    x = zeros(imax*jmax, 1);
+    for i = 2 : imax-1
+        for j = 2: imax-1
+            index = (i-1) * jmax + j;
+            b(index) = (u_star(i, j) - u_star(i-1, j)) * deltay + ...
+                       (v_star(i, j) - v_star(i, j-1)) * deltax;
+            A(index, index) = -2 *(deltax/deltay + deltay/deltax);
+            A(index+1, index)
+            A(index, index)
+        end
+    end
+    
+
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Correction Step
     % Calculation of Timestep n + 1 
     for i = 2 : imax-1
         for j = 2: imax-1
@@ -154,7 +173,12 @@ for itr = 0:itr_max
             F3n(i,j) = F3n_1 + F3n_2 +F3n_3 + F3n_4;
 
             %%%%%%%%%%%%%%%%%%%%%
-            % Calculation of 
+            % Calculation of n+1 Values
+            Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat / (deltax * deltay) + Tn(i,j);
+
+
+
+
 
         end
     end
