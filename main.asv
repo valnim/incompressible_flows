@@ -154,9 +154,7 @@ for itr = 0:itr_max
             F3n(i,j) = F3n_1 + F3n_2 +F3n_3 + F3n_4;
 
             %%%%%%%%%%%%%%%%%%%%%
-            % Calculation of Tn+1
-
-            
+            % Calculation of 
 
         end
     end
