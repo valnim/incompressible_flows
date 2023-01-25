@@ -175,8 +175,7 @@ for itr = 0:itr_max
     x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
         for j = 2: imax-1
-            index = (i-1) * jmax + j;
-            b(index) = (u_star(i, j) - u_star(i-1, j)) * deltay + ...
+            b(index(i,j)) = (u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax;
         end
     end
@@ -184,8 +183,7 @@ for itr = 0:itr_max
     x = GaussSeidel(A, b, x0, tol, gs_itr_max);
     for i = 2 : imax-1
         for j = 2: imax-1
-            index = (i-1) * jmax + j;
-            p_prime(i,j) = x(index);
+            p_prime(i,j) = x(index(i,j));
         end
     end
 
@@ -238,7 +236,7 @@ for itr = 0:itr_max
     F2nm1 = F2n;
     F3nm1 = F3n;
 
-    t_sim = t_sim + deltat;
+    t_sim = t_sim + deltat
 
 end
 
