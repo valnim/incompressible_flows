@@ -19,8 +19,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 10;           % Number of Cells in X Direction
-nj = 10;           % Number of Cells in Y Direction
+ni = 20;           % Number of Cells in X Direction
+nj = 20;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -97,7 +97,7 @@ end
 
 % Time Iteration
 t_sim = 0;
-itr_max = 70;
+itr_max = 5;
 
 tol = 1e-2;
 gs_itr_max = 1e4;
@@ -106,6 +106,9 @@ for itr = 0:itr_max
     un(1,2:jmax-1) = 0;
     vn(1,2:jmax-1) = - vn(2,2:jmax-1);
     Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
+    unm1(1,2:jmax-1) = 0;
+    vnm1(1,2:jmax-1) = - vnm1(2,2:jmax-1);
+    Tnm1(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
 
     % Right Wall (Wall with Constant Temperature T_C)
     un(imax,2:jmax-1) = 0;
