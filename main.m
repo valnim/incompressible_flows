@@ -19,8 +19,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 30;           % Number of Cells in X Direction
-nj = 30;           % Number of Cells in Y Direction
+ni = 20;           % Number of Cells in X Direction
+nj = 20;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -30,11 +30,11 @@ deltay = H / nj;
 % Initialization of Fluid parameter arrays
 unm1 = zeros(imax, jmax);
 vnm1 = zeros(imax, jmax);
-pnm1 = zeros(imax, jmax);
+pnm1 = ones(imax, jmax);
 Tnm1 = zeros(imax, jmax);
 
-un = ones(imax, jmax);
-vn = ones(imax, jmax);
+un = zeros(imax, jmax);
+vn = zeros(imax, jmax);
 pn = ones(imax, jmax);
 Tn = zeros(imax, jmax);
 
