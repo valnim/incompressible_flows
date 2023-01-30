@@ -57,6 +57,8 @@ F3nm1 = zeros(imax, jmax);
 
 index = @(i,j) (i-1) * jmax + j;
 
+deltat = zeros(imax, jmax);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Coefficent Matrix for Poisson Equation
 A = eye(imax*jmax, imax*jmax);
@@ -111,7 +113,7 @@ for itr = 0:itr_max
             % Timestep calculation
             temp = (abs(un(i,j)) / deltax + ...
                 abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
-            deltat = Cfl * temp^-1;
+            deltat(i,j) = Cfl * temp^-1;
             % RHS Term for X Impulse
             F1n_1 = (((un(i+1, j) + un(i,j))/2)^2 -  ...
                 ((un(i, j) + un(i-1,j))/2)^2)* deltay;
@@ -151,8 +153,8 @@ for itr = 0:itr_max
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Prediction Step Values
 
-            u_star(i,j) = (3/2 * F1n(i,j) - 1/2 * F1nm1(i,j)) * deltat / (deltax * deltay) + un(i,j);
-            v_star(i,j) = (3/2 * F2n(i,j) - 1/2 * F2nm1(i,j)) * deltat / (deltax * deltay) + vn(i,j);
+            u_star(i,j) = (3/2 * F1n(i,j) - 1/2 * F1nm1(i,j)) * deltat(i,j) / (deltax * deltay) + un(i,j);
+            v_star(i,j) = (3/2 * F2n(i,j) - 1/2 * F2nm1(i,j)) * deltat(i,j) / (deltax * deltay) + vn(i,j);
         end
     end
 
@@ -165,8 +167,9 @@ for itr = 0:itr_max
     x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
         for j = 2: imax-1
-            b(index(i,j)) = (u_star(i, j) - u_star(i-1, j)) * deltay + ...
-                       (v_star(i, j) - v_star(i, j-1)) * deltax;
+            
+            b(index(i,j)) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
+                       (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
         end
     end
 
@@ -189,10 +192,6 @@ for itr = 0:itr_max
     % Calculation of Timestep n + 1 
     for i = 2 : imax-1
         for j = 2: imax-1
-            % Timestep calculation
-            temp = (abs(un(i,j)) / deltax + ...
-                abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
-            deltat = Cfl * temp^-1;            
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % RHS Term for Energy Impulse
             F3n_1 = (un(i,j) * (0.5 * (Tn(i+1,j) + Tn(i,j))) - ...
@@ -211,9 +210,9 @@ for itr = 0:itr_max
 
             %%%%%%%%%%%%%%%%%%%%%
             % Calculation of n+1 Values
-            Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat / (deltax * deltay) + Tn(i,j);
-            unp1(i,j) = u_star(i,j) - deltat * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
-            vnp1(i,j) = v_star(i,j) - deltat * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
+            Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat(i,j) / (deltax * deltay) + Tn(i,j);
+            unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
+            vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
             pnp1(i,j) = pn(i,j) + p_prime(i,j);
 
         end
