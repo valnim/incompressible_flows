@@ -281,6 +281,13 @@ vdisp = vn(1:imax, 1:jmax);
 vdisp = flipud(vdisp');
 quiver(udisp, vdisp);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot Pressure
+figure(3);
+pdisp = pn(1:imax, 1:jmax);
+pdisp = flipud(pdisp');
+heatmap(pdisp, "Colormap", jet)
+
 
 
 
