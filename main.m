@@ -265,10 +265,21 @@ for itr = 0:itr_max
     pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
 end
 disp('finished calculation');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot Temperature
+figure(1);
 Tdisp = Tn(1:imax, 1:jmax);
 Tdisp = flipud(Tdisp');
 heatmap(Tdisp, "Colormap", jet)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot Velocities
+figure(2);
+udisp = un(1:imax, 1:jmax);
+udisp = flipud(udisp');
+vdisp = vn(1:imax, 1:jmax);
+vdisp = flipud(vdisp');
+quiver(udisp, vdisp);
 
 
 
