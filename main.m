@@ -72,56 +72,37 @@ for i = 2 : imax-1
     end
 end
 
-% Pressure Boundaries
-for i = 2:imax-1
-    for j = 1:imax
-        if j == 1
-            A(index(i,j), index(i,j)+1) = -1;
-        elseif j == jmax
-            A(index(i,j), index(i,j)-1) = -1;
-        end
-    end
-end
-
-for i = 1:imax
-    for j = 2:imax-1
-        if i == 1
-            A(index(i,j), index(i,j)+jmax) = -1;
-        elseif i == imax
-            A(index(i,j), index(i,j)-jmax) = -1;
-        end
-
-    end
-end
+% % Pressure Boundaries
+% for i = 2:imax-1
+%     for j = 1:imax
+%         if j == 1
+%             A(index(i,j), index(i,j)+1) = -1;
+%         elseif j == jmax
+%             A(index(i,j), index(i,j)-1) = -1;
+%         end
+%     end
+% end
+% 
+% for i = 1:imax
+%     for j = 2:imax-1
+%         if i == 1
+%             A(index(i,j), index(i,j)+jmax) = -1;
+%         elseif i == imax
+%             A(index(i,j), index(i,j)-jmax) = -1;
+%         end
+% 
+%     end
+% end
         
 
 % Time Iteration
 t_sim = 0;
-itr_max = 70;
+itr_max = 70000;
 
-tol = 1e-2;
-gs_itr_max = 1e4;
+tol = 1e-4;
+gs_itr_max = 1e3;
 for itr = 0:itr_max
-    % Left Wall (Wall with Constant Temperature T_H)
-    un(1,2:jmax-1) = 0;
-    vn(1,2:jmax-1) = - vn(2,2:jmax-1);
-    Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
-
-    % Right Wall (Wall with Constant Temperature T_C)
-    un(imax,2:jmax-1) = 0;
-    vn(imax,2:jmax-1) = - vn(imax-1,2:jmax-1);
-    Tn(imax,2:jmax-1) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,2:jmax-1);
-
-    % Bottom Wall   (adiabat Wall)
-    un(2:imax-1,1) = - un(2:imax-1,2);
-    vn(2:imax-1,1) = 0;
-    Tn(2:imax-1,1) = Tn(2:imax-1,2);
-
-    % Top Wall      (adiabat Wall)
-    un(2:imax-1,jmax) = - un(2:imax-1,jmax-1);
-    vn(2:imax-1,jmax) = 0;
-    Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Projection Step
     % calculation of u_star and v_star
@@ -174,7 +155,13 @@ for itr = 0:itr_max
             v_star(i,j) = (3/2 * F2n(i,j) - 1/2 * F2nm1(i,j)) * deltat / (deltax * deltay) + vn(i,j);
         end
     end
-    
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Set Pressure Boundaries
+    p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
+    p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
+    p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
+    p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
@@ -251,11 +238,38 @@ for itr = 0:itr_max
     t_sim = t_sim + deltat;
     disp(t_sim);
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Wall Boundaries
+    % Left Wall (Wall with Constant Temperature T_H)
+    un(1,2:jmax-1) = 0;
+    vn(1,2:jmax-1) = - vn(2,2:jmax-1);
+    Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
+    pn(1,2:jmax-1) = pn(2,2:jmax-1);
+    
+    % Right Wall (Wall with Constant Temperature T_C)
+    un(imax,2:jmax-1) = 0;
+    vn(imax,2:jmax-1) = - vn(imax-1,2:jmax-1);
+    Tn(imax,2:jmax-1) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,2:jmax-1);
+    pn(imax,2:jmax-1) = pn(imax-1,2:jmax-1);
+    
+    % Bottom Wall   (adiabat Wall)
+    un(2:imax-1,1) = - un(2:imax-1,2);
+    vn(2:imax-1,1) = 0;
+    Tn(2:imax-1,1) = Tn(2:imax-1,2);
+    pn(2:imax-1,1) = pn(2:imax-1,2);
+    
+    % Top Wall      (adiabat Wall)
+    un(2:imax-1,jmax) = - un(2:imax-1,jmax-1);
+    vn(2:imax-1,jmax) = 0;
+    Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
+    pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
 end
 disp('finished calculation');
 Tdisp = Tn(1:imax, 1:jmax);
 Tdisp = flipud(Tdisp');
 heatmap(Tdisp, "Colormap", jet)
+
+
 
 
 
