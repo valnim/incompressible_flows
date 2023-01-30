@@ -156,12 +156,7 @@ for itr = 0:itr_max
         end
     end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Set Pressure Boundaries
-    p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
-    p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
-    p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
-    p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
+    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
@@ -182,7 +177,12 @@ for itr = 0:itr_max
         end
     end
 
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Set Pressure Boundaries
+    p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
+    p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
+    p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
+    p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Correction Step
