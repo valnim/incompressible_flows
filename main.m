@@ -127,7 +127,7 @@ for itr = 0:itr_max
             F1n_5 = (((un(i, j+1) - un(i,j))/deltay) +  ...
                 ((un(i, j) - un(i,j-1))/deltay))* deltax;
 
-            F1n(i,j) = F1n_1 + F1n_2 + F1n_3 + F1n_4 + F1n_5;
+            F1n(i,j) = - F1n_1 - F1n_2 - F1n_3 + (F1n_4 + F1n_5) / Re;
 
             % RHS Term for Y Impulse
             F2n_1 = (((un(i, j) + un(i,j+1))/2) * ((vn(i, j) + vn(i+1,j))/2) - ...
@@ -146,7 +146,7 @@ for itr = 0:itr_max
 
             F2n_6 = (Tn(i, j+1) - Tn(i, j)) * deltax * deltay;
 
-            F2n(i,j) = F2n_1 + F2n_2 + F2n_3 + F2n_4 + F2n_5 + F2n_6;
+            F2n(i,j) = - F2n_1 - F2n_2 - F2n_3 + (F2n_4 + F2n_5) / Re + F2n_6;
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Prediction Step Values
@@ -207,7 +207,7 @@ for itr = 0:itr_max
             F3n_4 = ((Tn(i,j+1) - Tn(i,j))/deltay - ...
                 (Tn(i,j) - Tn(i,j-1))/deltay)*deltax;
 
-            F3n(i,j) = F3n_1 + F3n_2 +F3n_3 + F3n_4;
+            F3n(i,j) = - F3n_1 - F3n_2 + (F3n_3 + F3n_4) /Re / Pr;
 
             %%%%%%%%%%%%%%%%%%%%%
             % Calculation of n+1 Values
