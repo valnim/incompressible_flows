@@ -123,21 +123,14 @@ for itr = 0:itr_max
     Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Timestep size calculation
-    temp = 0;
-    for i = 2 : imax-1
-        for j = 2: imax-1
-            temp = max(temp,(abs(un(i,j)) / deltax + ...
-                abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2));
-        end
-    end
-    deltat = Cfl * temp^-1;
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Projection Step
     % calculation of u_star and v_star
     for i = 2 : imax-1
         for j = 2: imax-1
+            % Timestep calculation
+            temp = (abs(un(i,j)) / deltax + ...
+                abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
+            deltat = Cfl * temp^-1;
             % RHS Term for X Impulse
             F1n_1 = (((un(i+1, j) + un(i,j))/2)^2 -  ...
                 ((un(i, j) + un(i-1,j))/2)^2)* deltay;
@@ -209,6 +202,10 @@ for itr = 0:itr_max
     % Calculation of Timestep n + 1 
     for i = 2 : imax-1
         for j = 2: imax-1
+            % Timestep calculation
+            temp = (abs(un(i,j)) / deltax + ...
+                abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
+            deltat = Cfl * temp^-1;            
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % RHS Term for Energy Impulse
             F3n_1 = (un(i,j) * (0.5 * (Tn(i+1,j) + Tn(i,j))) - ...
