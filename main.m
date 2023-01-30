@@ -63,7 +63,7 @@ deltat = zeros(imax, jmax);
 % Coefficent Matrix for Poisson Equation
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
-    for j = 2: imax-1
+    for j = 2: jmax-1
         idx = index(i,j);
         A(idx, idx) = -2 *(deltax/deltay + deltay/deltax);
         A(idx, idx+1) = deltax/deltay;
@@ -76,7 +76,7 @@ end
 
 % % Pressure Boundaries
 for i = 2:imax-1
-    for j = 1:imax
+    for j = 1:jmax
         if j == 1
             A(index(i,j), index(i,j)+1) = -1;
         elseif j == jmax
@@ -86,7 +86,7 @@ for i = 2:imax-1
 end
 
 for i = 1:imax
-    for j = 2:imax-1
+    for j = 2:jmax-1
         if i == 1
             A(index(i,j), index(i,j)+jmax) = -1;
         elseif i == imax
@@ -109,7 +109,7 @@ for itr = 0:itr_max
     % Projection Step
     % calculation of u_star and v_star
     for i = 2 : imax-1
-        for j = 2: imax-1
+        for j = 2: jmax-1
             % Timestep calculation
             temp = (abs(un(i,j)) / deltax + ...
                 abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
@@ -166,7 +166,7 @@ for itr = 0:itr_max
     b = zeros(imax*jmax, 1);
     x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
-        for j = 2: imax-1
+        for j = 2: jmax-1
             
             b(index(i,j)) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
@@ -177,7 +177,7 @@ for itr = 0:itr_max
     x = GaussSeidel(A, b, x0, tol, gs_itr_max);
     %x = A\b;
     for i = 2 : imax-1
-        for j = 2: imax-1
+        for j = 2: jmax-1
             p_prime(i,j) = x(index(i,j));
         end
     end
@@ -193,7 +193,7 @@ for itr = 0:itr_max
     % Correction Step
     % Calculation of Timestep n + 1 
     for i = 2 : imax-1
-        for j = 2: imax-1
+        for j = 2: jmax-1
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % RHS Term for Energy Impulse
             F3n_1 = (un(i,j) * (0.5 * (Tn(i+1,j) + Tn(i,j))) - ...
