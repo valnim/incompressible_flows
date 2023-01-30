@@ -270,6 +270,7 @@ figure(1);
 Tdisp = Tn(1:imax, 1:jmax);
 Tdisp = flipud(Tdisp');
 heatmap(Tdisp, "Colormap", jet)
+title("Temperature");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot Velocities
@@ -279,6 +280,7 @@ udisp = flipud(udisp');
 vdisp = vn(1:imax, 1:jmax);
 vdisp = flipud(vdisp');
 quiver(udisp, vdisp);
+title("Velocity");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot Pressure
@@ -286,6 +288,7 @@ figure(3);
 pdisp = pn(1:imax, 1:jmax);
 pdisp = flipud(pdisp');
 heatmap(pdisp, "Colormap", jet)
+title("Pressure");
 
 
 
