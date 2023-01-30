@@ -75,31 +75,31 @@ for i = 2 : imax-1
 end
 
 % % Pressure Boundaries
-% for i = 2:imax-1
-%     for j = 1:imax
-%         if j == 1
-%             A(index(i,j), index(i,j)+1) = -1;
-%         elseif j == jmax
-%             A(index(i,j), index(i,j)-1) = -1;
-%         end
-%     end
-% end
-% 
-% for i = 1:imax
-%     for j = 2:imax-1
-%         if i == 1
-%             A(index(i,j), index(i,j)+jmax) = -1;
-%         elseif i == imax
-%             A(index(i,j), index(i,j)-jmax) = -1;
-%         end
-% 
-%     end
-% end
+for i = 2:imax-1
+    for j = 1:imax
+        if j == 1
+            A(index(i,j), index(i,j)+1) = -1;
+        elseif j == jmax
+            A(index(i,j), index(i,j)-1) = -1;
+        end
+    end
+end
+
+for i = 1:imax
+    for j = 2:imax-1
+        if i == 1
+            A(index(i,j), index(i,j)+jmax) = -1;
+        elseif i == imax
+            A(index(i,j), index(i,j)-jmax) = -1;
+        end
+
+    end
+end
         
 
 % Time Iteration
 t_sim = 0;
-itr_max = 5000;
+itr_max = 80000;
 
 tol = 1e-4;
 gs_itr_max = 1e3;
@@ -172,8 +172,10 @@ for itr = 0:itr_max
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
         end
     end
+    
 
     x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    %x = A\b;
     for i = 2 : imax-1
         for j = 2: imax-1
             p_prime(i,j) = x(index(i,j));
@@ -182,10 +184,10 @@ for itr = 0:itr_max
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Set Pressure Boundaries
-    p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
-    p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
-    p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
-    p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
+%     p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
+%     p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
+%     p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
+%     p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Correction Step
