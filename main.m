@@ -97,7 +97,7 @@ end
 
 % Time Iteration
 t_sim = 0;
-itr_max = 70000;
+itr_max = 5000;
 
 tol = 1e-4;
 gs_itr_max = 1e3;
@@ -235,8 +235,7 @@ for itr = 0:itr_max
     F2nm1 = F2n;
     F3nm1 = F3n;
 
-    t_sim = t_sim + deltat;
-    disp(t_sim);
+    disp(itr);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Wall Boundaries
