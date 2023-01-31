@@ -38,15 +38,15 @@ vn = zeros(imax, jmax);
 pn = ones(imax, jmax);
 Tn = zeros(imax, jmax);
 
-u_star = zeros(imax, jmax);
-v_star = zeros(imax, jmax);
+u_star = NaN(imax, jmax);
+v_star = NaN(imax, jmax);
 
-p_prime = zeros(imax, jmax);
+p_prime = NaN(imax, jmax);
 
-unp1 = zeros(imax, jmax);
-vnp1 = zeros(imax, jmax);
-pnp1 = zeros(imax, jmax);
-Tnp1 = zeros(imax, jmax);
+unp1 = NaN(imax, jmax);
+vnp1 = NaN(imax, jmax);
+pnp1 = NaN(imax, jmax);
+Tnp1 = NaN(imax, jmax);
 
 F1n = zeros(imax, jmax);
 F2n = zeros(imax, jmax);
@@ -112,8 +112,8 @@ for itr = 0:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Projection Step
     % calculation of u_star and v_star
-    for i = 2 : imax-1
-        for j = 2: jmax-1
+    for i = 2 : imax-2
+        for j = 2: jmax-2
             % Timestep calculation
             temp = (abs(un(i,j)) / deltax + ...
                 abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
@@ -216,14 +216,19 @@ for itr = 0:itr_max
             F3n(i,j) = - F3n_1 - F3n_2 + (F3n_3 + F3n_4) /Re / Pr;
 
             %%%%%%%%%%%%%%%%%%%%%
-            % Calculation of n+1 Values
+            % Calculation of n+1 Values of T
             Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat(i,j) / (deltax * deltay) + Tn(i,j);
-            unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
-            vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
-            pnp1(i,j) = pn(i,j) + p_prime(i,j);
-
         end
     end
+    for i = 2 : imax-2
+        for j = 2: jmax-2
+            %%%%%%%%%%%%%%%%%%%%%
+            % Calculation of n+1 Values of u and v
+            unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
+            vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
+        end
+    end
+    pnp1 = pn + p_prime;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Change Timestep
@@ -249,12 +254,14 @@ for itr = 0:itr_max
     un(1,2:jmax-1) = 0;
     vn(1,2:jmax-1) = - vn(2,2:jmax-1);
     Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
+    %Tn(1,2:jmax-1) = (T_H - T_M) / (T_H - T_C);
     pn(1,2:jmax-1) = pn(2,2:jmax-1);
     
     % Right Wall (Wall with Constant Temperature T_C)
-    un(imax,2:jmax-1) = 0;
-    vn(imax,2:jmax-1) = - vn(imax-1,2:jmax-1);
-    Tn(imax,2:jmax-1) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,2:jmax-1);
+    un(imax-1,2:jmax-2) = 0;
+    vn(imax-1,2:jmax-2) = - vn(imax-2,2:jmax-2);
+    Tn(imax,2:jmax-1) = - 2 * (T_C - T_M) / (T_H - T_C) + Tn(imax-1,2:jmax-1);
+    %Tn(imax,2:jmax-1) = (T_C - T_M) / (T_H - T_C);
     pn(imax,2:jmax-1) = pn(imax-1,2:jmax-1);
     
     % Bottom Wall   (adiabat Wall)
@@ -264,12 +271,12 @@ for itr = 0:itr_max
     pn(2:imax-1,1) = pn(2:imax-1,2);
     
     % Top Wall      (adiabat Wall)
-    un(2:imax-1,jmax) = - un(2:imax-1,jmax-1);
-    vn(2:imax-1,jmax) = 0;
+    un(2:imax-2,jmax-1) = - un(2:imax-2,jmax-2);
+    vn(2:imax-2,jmax-1) = 0;
     Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
     pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
 
-    if mod(itr, 1000) == 0
+    if mod(itr, 1) == 0
         % Plot Temperature
         figure(1);
         Tdisp = Tn(1:imax, 1:jmax);
