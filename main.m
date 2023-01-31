@@ -302,6 +302,13 @@ pdisp = flipud(pdisp');
 heatmap(pdisp, "Colormap", jet)
 title("Pressure");
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot A Matrix
+figure(4);
+heatmap(A, "Colormap", jet)
+title("Koeffizentenmatrix");
+
+
 
 
 
