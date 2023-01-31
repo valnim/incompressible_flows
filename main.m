@@ -201,9 +201,9 @@ for itr = 0:itr_max
     % 
     b = zeros(ni*nj, 1);
     x0 = zeros(ni*nj, 1);
-    for i = 2 : ni-1
-        for j = 2: nj-1
-            idx = index(i,j);
+    for i = 2 : imax-1
+        for j = 2: imax-1
+            idx = index(i-1,j-1);
             b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
         end
