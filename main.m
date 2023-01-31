@@ -70,29 +70,34 @@ k2 = deltay/deltax;
 for i = 1 : ni
     for j = 1: nj
         idx = index(i,j);
-        A(idx, idx) = -2 *(k1 + k2);
-        if idx > 1
-            A(idx, idx-1) = k1;
-        else
-            A(idx, idx) = A(idx, idx) + k1;
-        end
-        
-        if idx > nj
-            A(idx, idx-nj) = k2;
-        else
-            A(idx, idx) = A(idx, idx) + k2;
-        end
-
-        if idx < nj*ni
-            A(idx, idx+1) = k1;
+        if i ~= 1 || j ~= 1
+            A(idx, idx) = -2 *(k1 + k2);
+            if idx > 1
+                A(idx, idx-1) = k1;
+            else
+                A(idx, idx) = A(idx, idx) + k1;
+            end
+            
+            if idx > nj
+                A(idx, idx-nj) = k2;
+            else
+                A(idx, idx) = A(idx, idx) + k2;
+            end
+    
+            if idx < nj*ni
+                A(idx, idx+1) = k1;
+            else 
+                A(idx, idx) = A(idx, idx) + k1;
+            end
+    
+            if idx < (nj*ni - (nj - 1))
+                A(idx, idx+nj) = k2;
+            else
+                A(idx, idx) = A(idx, idx) + k2;
+            end
         else 
-            A(idx, idx) = A(idx, idx) + k1;
+            A(idx, idx) = 1;
         end
-        if idx < (nj*ni - (nj - 1))
-            A(idx, idx+nj) = k2;
-        else
-            A(idx, idx) = A(idx, idx) + k2;
-        end             
     end
 end        
 
@@ -194,10 +199,10 @@ for itr = 0:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
     % 
-    b = zeros(imax*jmax, 1);
-    x0 = zeros(imax*jmax, 1);
-    for i = 2 : imax-1
-        for j = 2: jmax-1
+    b = zeros(ni*nj, 1);
+    x0 = zeros(ni*nj, 1);
+    for i = 2 : ni-1
+        for j = 2: nj-1
             idx = index(i,j);
             b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
@@ -207,10 +212,9 @@ for itr = 0:itr_max
 
     %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
     x = A\b;
-    for i = 2 : imax-1
-        for j = 2: jmax-1
-            idx = index(i,j);
-            p_prime(i,j) = x(idx);
+    for i = 2 : ni-1
+        for j = 2: nj-1
+            p_prime(i,j) = x(index(i,j));
         end
     end
 
