@@ -19,8 +19,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 10;           % Number of Cells in X Direction
-nj = 10;           % Number of Cells in Y Direction
+ni = 3;           % Number of Cells in X Direction
+nj = 3;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -77,25 +77,27 @@ end
 % % Pressure Boundaries
 for i = 2:imax-1
     for j = 1:jmax
+        idx = index(i,j);
         if j == 1
-            A(index(i,j), index(i,j)+1) = -1;
+            A(idx, idx+1) = -1;
         elseif j == jmax
-            A(index(i,j), index(i,j)-1) = -1;
+            A(idx, idx-1) = -1;
         end
     end
 end
 
 for i = 1:imax
     for j = 2:jmax-1
+        idx = index(i,j);
         if i == 1
-            A(index(i,j), index(i,j)+jmax) = -1;
+            if j ~= 2
+                A(idx, idx+jmax) = -1;
+            end
         elseif i == imax
-            A(index(i,j), index(i,j)-jmax) = -1;
+            A(idx, idx-jmax) = -1;
         end
-
     end
-end
-        
+end        
 
 % Time Iteration
 t_sim = 0;
