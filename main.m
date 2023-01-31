@@ -263,6 +263,17 @@ for itr = 0:itr_max
     vn(2:imax-1,jmax) = 0;
     Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
     pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
+
+    if mod(itr, 1000) == 0
+        % Plot Temperature
+        figure(1);
+        Tdisp = Tn(1:imax, 1:jmax);
+        Tdisp = flipud(Tdisp');
+        heatmap(Tdisp, "Colormap", jet)
+        title("Temperature");
+        drawnow;
+    end
+
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
