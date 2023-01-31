@@ -65,11 +65,13 @@ A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
     for j = 2: jmax-1
         idx = index(i,j);
-        A(idx, idx) = -2 *(deltax/deltay + deltay/deltax);
-        A(idx, idx+1) = deltax/deltay;
-        A(idx, idx-1) = deltax/deltay;
-        A(idx, idx+jmax) = deltay/deltax;
-        A(idx, idx-jmax) = deltay/deltax;
+        k1 = deltax/deltay;
+        k2 = deltay/deltax;
+        A(idx, idx) = -2 *(k1 + k2);
+        A(idx, idx+1) = k1;
+        A(idx, idx-1) = k1;
+        A(idx, idx+jmax) = k2;
+        A(idx, idx-jmax) = k2;
         
     end
 end
@@ -148,7 +150,7 @@ for itr = 0:itr_max
             F2n_5 = (((vn(i, j+1) - vn(i,j))/deltay) +  ...
                 ((vn(i, j) - vn(i,j-1))/deltay))* deltax;
 
-            F2n_6 = (Tn(i, j+1) - Tn(i, j)) * deltax * deltay;
+            F2n_6 = (Tn(i, j+1) + Tn(i, j)) / 2 * deltax * deltay;
 
             F2n(i,j) = - F2n_1 - F2n_2 - F2n_3 + (F2n_4 + F2n_5) / Re + F2n_6;
 
@@ -169,8 +171,8 @@ for itr = 0:itr_max
     x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
         for j = 2: jmax-1
-            
-            b(index(i,j)) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
+            idx = index(i,j);
+            b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
         end
     end
@@ -180,7 +182,8 @@ for itr = 0:itr_max
     %x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
-            p_prime(i,j) = x(index(i,j));
+            idx = index(i,j);
+            p_prime(i,j) = x(idx);
         end
     end
 
