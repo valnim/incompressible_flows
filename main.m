@@ -212,9 +212,10 @@ for itr = 0:itr_max
 
     %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
     x = A\b;
-    for i = 2 : ni-1
-        for j = 2: nj-1
-            p_prime(i,j) = x(index(i,j));
+    for i = 2 : imax-1
+        for j = 2: jmax-1
+            idx = index(i-1, j-1);
+            p_prime(i,j) = x(idx);
         end
     end
 
