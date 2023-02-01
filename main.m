@@ -102,7 +102,6 @@ for i = 1:imax
 end        
 
 % Time Iteration
-t_sim = 0;
 itr_max = 80000;
 
 tol = 1e-4;
@@ -339,7 +338,6 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
     end
-    disp(max(p_prime));
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
