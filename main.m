@@ -15,6 +15,9 @@ Re = 100;
 Pr = 1;
 Cfl = 0.9;
 
+alpha_relax = 1;
+beta_relax = 1;
+
 nu = V_C * L / Re;
 a = nu / Pr;
 
@@ -250,17 +253,17 @@ for itr = 0:itr_max
     % Calculation of n+1 Values of u
     for i = 2 : imax-2
         for j = 2: jmax-1
-            unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
+            unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax * alpha_relax;
         end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Calculation of n+1 Values of v
     for i = 2 : imax-1
         for j = 2: jmax-2
-            vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
+            vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay * alpha_relax;
         end
     end
-    pnp1 = pn + p_prime;
+    pnp1 = pn + p_prime * beta_relax;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Change Timestep
@@ -338,6 +341,7 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
     end
+
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
