@@ -293,7 +293,7 @@ for itr = 0:itr_max
     % Right Wall (Wall with Constant Temperature T_C)
     un(imax-1,2:jmax-1) = 0;
     vn(imax,2:jmax-2) = - vn(imax-1,2:jmax-2);
-    Tn(imax,2:jmax-1) = - 2 * (T_C - T_M) / (T_H - T_C) + Tn(imax-1,2:jmax-1);
+    Tn(imax,2:jmax-1) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,2:jmax-1);
     %Tn(imax,2:jmax-1) = (T_C - T_M) / (T_H - T_C);
     pn(imax,2:jmax-1) = pn(imax-1,2:jmax-1);
     
