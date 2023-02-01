@@ -312,17 +312,29 @@ for itr = 0:itr_max
     if mod(itr, 100) == 0
         % Plot Temperature
         figure(1);
-        Tdisp = Tn(1:imax, 1:jmax);
-        Tdisp = flipud(Tdisp');
+        Tdisp = Tn(1:imax, 1:jmax)';
+        Tdisp = flipud(Tdisp);
         heatmap(Tdisp, "Colormap", jet)
         title("Temperature");
-        figure(2);
+        
         % Plot Velocities
-        udisp = un(1:imax, 1:jmax);
-        udisp = flipud(udisp');
-        vdisp = vn(1:imax, 1:jmax);
-        vdisp = flipud(vdisp');
-        quiver(udisp, vdisp);
+        figure(2);
+        x = linspace(1,imax, imax);
+        y = linspace(1,jmax, jmax);
+        xu = x + 0.5;
+        yv = y + 0.5;
+        %udisp = un(1:imax, 1:jmax)';
+        %udisp = flipud(udisp);
+        uy = zeros(imax, jmax);
+        vx = zeros(imax, jmax);
+        %vdisp = vn(1:imax, 1:jmax)';
+        %vdisp = vn';
+        hold off;
+        quiver(xu, y, un, uy);
+        hold on;
+        quiver(x, yv, vx, vn);
+        %quiver(udisp, vdisp);
+        hold off;
         title("Velocity");
         drawnow;
     end
@@ -340,10 +352,10 @@ title("Temperature");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot Velocities
 figure(2);
-udisp = un(1:imax, 1:jmax);
-udisp = flipud(udisp');
-vdisp = vn(1:imax, 1:jmax);
-vdisp = flipud(vdisp');
+udisp = un(1:imax, 1:jmax)';
+udisp = flipud(udisp);
+vdisp = vn(1:imax, 1:jmax)';
+vdisp = flipud(vdisp);
 quiver(udisp, vdisp);
 title("Velocity");
 
