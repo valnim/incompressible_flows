@@ -331,9 +331,15 @@ for itr = 0:itr_max
         quiver(x, yv, vx, flipud(vn'));
         hold off;
         title("Velocity");
+        % Plot Pressure
+        figure(3);
+        pdisp = pn(1:imax, 1:jmax);
+        pdisp = flipud(pdisp');
+        heatmap(pdisp, "Colormap", jet)
+        title("Pressure");
         drawnow;
     end
-
+    disp(max(p_prime));
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
