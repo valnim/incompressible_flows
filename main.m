@@ -19,8 +19,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 3;           % Number of Cells in X Direction
-nj = 3;           % Number of Cells in Y Direction
+ni = 10;           % Number of Cells in X Direction
+nj = 10;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -108,16 +108,22 @@ itr_max = 80000;
 tol = 1e-4;
 gs_itr_max = 1e3;
 for itr = 0:itr_max
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Projection Step
-    % calculation of u_star and v_star
-    for i = 2 : imax-2
-        for j = 2: jmax-2
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Calculation of lokal Timestep
+    for i = 2 : imax-1
+        for j = 2 :jmax-1
             % Timestep calculation
             temp = (abs(un(i,j)) / deltax + ...
                 abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
             deltat(i,j) = Cfl * temp^-1;
+        end
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Projection Step
+    % calculation of u_star
+    for i = 2 : imax-2
+        for j = 2: jmax-1            
             % RHS Term for X Impulse
             F1n_1 = (((un(i+1, j) + un(i,j))/2)^2 -  ...
                 ((un(i, j) + un(i-1,j))/2)^2)* deltay;
@@ -135,6 +141,16 @@ for itr = 0:itr_max
 
             F1n(i,j) = - F1n_1 - F1n_2 - F1n_3 + (F1n_4 + F1n_5) / Re;
 
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % Prediction Step Values
+            u_star(i,j) = (3/2 * F1n(i,j) - 1/2 * F1nm1(i,j)) * deltat(i,j) / (deltax * deltay) + un(i,j);
+        end
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Projection Step
+    % calculation of v_star
+    for i = 2 : imax-1
+        for j = 2: jmax-2
             % RHS Term for Y Impulse
             F2n_1 = (((un(i, j) + un(i,j+1))/2) * ((vn(i, j) + vn(i+1,j))/2) - ...
                 ((un(i-1, j+1) + un(i-1,j))/2) * ((vn(i-1, j) + vn(i,j))/2)) * deltax;
@@ -156,13 +172,24 @@ for itr = 0:itr_max
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Prediction Step Values
-
-            u_star(i,j) = (3/2 * F1n(i,j) - 1/2 * F1nm1(i,j)) * deltat(i,j) / (deltax * deltay) + un(i,j);
             v_star(i,j) = (3/2 * F2n(i,j) - 1/2 * F2nm1(i,j)) * deltat(i,j) / (deltax * deltay) + vn(i,j);
         end
     end
 
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Set Star Velocity Boundaries
+    % Left Wall
+    u_star(1,2:jmax-1) = 0;
+    v_star(1,2:jmax-2) = - v_star(2,2:jmax-2);
+    % Right Wall
+    u_star(imax-1,2:jmax-1) = 0;
+    v_star(imax,2:jmax-2) = - v_star(imax-1,2:jmax-2); 
+    % Bottom Wall
+    u_star(2:imax-2,1) = - u_star(2:imax-2,2);
+    v_star(2:imax-1,1) = 0;    
+    % Top Wall
+    u_star(2:imax-2,jmax) = - u_star(2:imax-2,jmax-1);
+    v_star(2:imax-1,jmax-1) = 0;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
@@ -220,17 +247,23 @@ for itr = 0:itr_max
             Tnp1(i,j) = (3/2 * F3n(i,j) - 1/2 * F3nm1(i,j)) * deltat(i,j) / (deltax * deltay) + Tn(i,j);
         end
     end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Calculation of n+1 Values of u
     for i = 2 : imax-2
-        for j = 2: jmax-2
-            %%%%%%%%%%%%%%%%%%%%%
-            % Calculation of n+1 Values of u and v
+        for j = 2: jmax-1
             unp1(i,j) = u_star(i,j) - deltat(i,j) * (p_prime(i+1,j) - p_prime(i,j)) / deltax;
+        end
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Calculation of n+1 Values of v
+    for i = 2 : imax-1
+        for j = 2: jmax-2
             vnp1(i,j) = v_star(i,j) - deltat(i,j) * (p_prime(i,j+1) - p_prime(i,j)) / deltay;
         end
     end
     pnp1 = pn + p_prime;
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Change Timestep
     unm1 = un;
     vnm1 = vn;
@@ -252,37 +285,45 @@ for itr = 0:itr_max
     % Wall Boundaries
     % Left Wall (Wall with Constant Temperature T_H)
     un(1,2:jmax-1) = 0;
-    vn(1,2:jmax-1) = - vn(2,2:jmax-1);
+    vn(1,2:jmax-2) = - vn(2,2:jmax-2);
     Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
     %Tn(1,2:jmax-1) = (T_H - T_M) / (T_H - T_C);
     pn(1,2:jmax-1) = pn(2,2:jmax-1);
     
     % Right Wall (Wall with Constant Temperature T_C)
-    un(imax-1,2:jmax-2) = 0;
-    vn(imax-1,2:jmax-2) = - vn(imax-2,2:jmax-2);
+    un(imax-1,2:jmax-1) = 0;
+    vn(imax,2:jmax-2) = - vn(imax-1,2:jmax-2);
     Tn(imax,2:jmax-1) = - 2 * (T_C - T_M) / (T_H - T_C) + Tn(imax-1,2:jmax-1);
     %Tn(imax,2:jmax-1) = (T_C - T_M) / (T_H - T_C);
     pn(imax,2:jmax-1) = pn(imax-1,2:jmax-1);
     
     % Bottom Wall   (adiabat Wall)
-    un(2:imax-1,1) = - un(2:imax-1,2);
-    vn(2:imax-1,1) = 0;
+    un(2:imax-2,1) = - un(2:imax-2,2);
+    vn(2:imax-1,1) = 0;    
     Tn(2:imax-1,1) = Tn(2:imax-1,2);
     pn(2:imax-1,1) = pn(2:imax-1,2);
     
     % Top Wall      (adiabat Wall)
-    un(2:imax-2,jmax-1) = - un(2:imax-2,jmax-2);
-    vn(2:imax-2,jmax-1) = 0;
+    un(2:imax-2,jmax) = - un(2:imax-2,jmax-1);
+    vn(2:imax-1,jmax-1) = 0;
     Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
     pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
 
-    if mod(itr, 1) == 0
+    if mod(itr, 100) == 0
         % Plot Temperature
         figure(1);
         Tdisp = Tn(1:imax, 1:jmax);
         Tdisp = flipud(Tdisp');
         heatmap(Tdisp, "Colormap", jet)
         title("Temperature");
+        figure(2);
+        % Plot Velocities
+        udisp = un(1:imax, 1:jmax);
+        udisp = flipud(udisp');
+        vdisp = vn(1:imax, 1:jmax);
+        vdisp = flipud(vdisp');
+        quiver(udisp, vdisp);
+        title("Velocity");
         drawnow;
     end
 
