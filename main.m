@@ -323,17 +323,12 @@ for itr = 0:itr_max
         y = linspace(1,jmax, jmax);
         xu = x + 0.5;
         yv = y + 0.5;
-        %udisp = un(1:imax, 1:jmax)';
-        %udisp = flipud(udisp);
         uy = zeros(imax, jmax);
         vx = zeros(imax, jmax);
-        %vdisp = vn(1:imax, 1:jmax)';
-        %vdisp = vn';
         hold off;
-        quiver(xu, y, un, uy);
+        quiver(xu, y, flipud(un'), uy);
         hold on;
-        quiver(x, yv, vx, vn);
-        %quiver(udisp, vdisp);
+        quiver(x, yv, vx, flipud(vn'));
         hold off;
         title("Velocity");
         drawnow;
@@ -352,11 +347,17 @@ title("Temperature");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot Velocities
 figure(2);
-udisp = un(1:imax, 1:jmax)';
-udisp = flipud(udisp);
-vdisp = vn(1:imax, 1:jmax)';
-vdisp = flipud(vdisp);
-quiver(udisp, vdisp);
+x = linspace(1,imax, imax);
+y = linspace(1,jmax, jmax);
+xu = x + 0.5;
+yv = y + 0.5;
+uy = zeros(imax, jmax);
+vx = zeros(imax, jmax);
+hold off;
+quiver(xu, y, flipud(un'), uy);
+hold on;
+quiver(x, yv, vx, flipud(vn'));
+hold off;
 title("Velocity");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
