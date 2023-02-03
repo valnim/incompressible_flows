@@ -317,6 +317,16 @@ for itr = 0:itr_max
     Tn(2:imax-1,jmax) = Tn(2:imax-1,jmax-1);
     pn(2:imax-1,jmax) = pn(2:imax-1,jmax-1);
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Check Continuity
+    conti = NaN(imax,jmax);
+    for i = 2 : imax-1
+        for j = 2: jmax-1
+            conti(i,j) = ((un(i, j) - un(i-1, j)) * deltay + ...
+                       (vn(i, j) - vn(i, j-1)) * deltax) /  deltat(i,j);
+        end
+    end
+
     if mod(itr, 100) == 0
         % Plot Temperature
         figure(1);
