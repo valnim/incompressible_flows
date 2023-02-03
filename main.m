@@ -13,7 +13,7 @@ p_0 = rho_bar * V_C^2;
 
 Re = 100;
 Pr = 1;
-Cfl = 0.9;
+Cfl = 0.25;
 
 alpha_relax = 1;
 beta_relax = 1;
@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 10;           % Number of Cells in X Direction
-nj = 10;           % Number of Cells in Y Direction
+ni = 5;           % Number of Cells in X Direction
+nj = 5;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -67,15 +67,16 @@ deltat = zeros(imax, jmax);
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
     for j = 2: jmax-1
-        idx = index(i,j);
-        k1 = deltax/deltay;
-        k2 = deltay/deltax;
-        A(idx, idx) = -2 *(k1 + k2);
-        A(idx, idx+1) = k1;
-        A(idx, idx-1) = k1;
-        A(idx, idx+jmax) = k2;
-        A(idx, idx-jmax) = k2;
-        
+        if i (i~= 2 || j ~= 2)
+            idx = index(i,j);
+            k1 = deltax/deltay;
+            k2 = deltay/deltax;
+            A(idx, idx) = -2 *(k1 + k2);
+            A(idx, idx+1) = k1;
+            A(idx, idx-1) = k1;
+            A(idx, idx+jmax) = k2;
+            A(idx, idx-jmax) = k2;
+        end
     end
 end
 
@@ -95,14 +96,19 @@ for i = 1:imax
     for j = 2:jmax-1
         idx = index(i,j);
         if i == 1
-            if j ~= 2
-                A(idx, idx+jmax) = -1;
-            end
+            A(idx, idx+jmax) = -1;
+            
         elseif i == imax
             A(idx, idx-jmax) = -1;
         end
     end
 end        
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot A Matrix
+figure(4);
+heatmap(A, "Colormap", jet)
+title("Koeffizentenmatrix");
 
 % Time Iteration
 itr_max = 80000;
@@ -327,7 +333,6 @@ for itr = 0:itr_max
         yv = y + 0.5;
         uy = zeros(imax, jmax);
         vx = zeros(imax, jmax);
-        hold off;
         quiver(xu, y, flipud(un'), uy);
         hold on;
         quiver(x, yv, vx, flipud(vn'));
@@ -376,11 +381,7 @@ pdisp = flipud(pdisp');
 heatmap(pdisp, "Colormap", jet)
 title("Pressure");
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot A Matrix
-figure(4);
-heatmap(A, "Colormap", jet)
-title("Koeffizentenmatrix");
+
 
 
 
