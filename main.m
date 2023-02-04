@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 5;           % Number of Cells in X Direction
-nj = 5;           % Number of Cells in Y Direction
+ni = 20;           % Number of Cells in X Direction
+nj = 20;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -213,8 +213,8 @@ for itr = 0:itr_max
     end
     
 
-    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
-    %x = A\b;
+    %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
             idx = index(i,j);
@@ -356,6 +356,10 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
     end
+
+    disp('');
+    disp('');
+    disp('');
 
 end
 disp('finished calculation');
