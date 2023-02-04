@@ -31,12 +31,12 @@ deltax = L / ni;
 deltay = H / nj;
 
 % Initialization of Fluid parameter arrays
-unm1 = zeros(imax, jmax);
+unm1 = ones(imax, jmax);
 vnm1 = zeros(imax, jmax);
 pnm1 = ones(imax, jmax);
 Tnm1 = zeros(imax, jmax);
 
-un = zeros(imax, jmax);
+un = ones(imax, jmax);
 vn = zeros(imax, jmax);
 pn = ones(imax, jmax);
 Tn = zeros(imax, jmax);
@@ -58,48 +58,45 @@ F1nm1 = zeros(imax, jmax);
 F2nm1 = zeros(imax, jmax);
 F3nm1 = zeros(imax, jmax);
 
-index = @(i,j) (i-1) * jmax + j;
+index = @(i,j) (i-1) * nj + j;
 
 deltat = zeros(imax, jmax);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Coefficent Matrix for Poisson Equation
-A = eye(imax*jmax, imax*jmax);
-for i = 2 : imax-1
-    for j = 2: jmax-1
-        if i (i~= 2 || j ~= 2)
-            idx = index(i,j);
-            k1 = deltax/deltay;
-            k2 = deltay/deltax;
+A = zeros(ni*nj, ni*nj);
+k1 = deltax/deltay;
+k2 = deltay/deltax;
+for i = 1 : ni
+    for j = 1: nj
+        idx = index(i,j);
+        if i ~= 1 || j ~= 1
             A(idx, idx) = -2 *(k1 + k2);
-            A(idx, idx+1) = k1;
-            A(idx, idx-1) = k1;
-            A(idx, idx+jmax) = k2;
-            A(idx, idx-jmax) = k2;
-        end
-    end
-end
-
-% % Pressure Boundaries
-for i = 2:imax-1
-    for j = 1:jmax
-        idx = index(i,j);
-        if j == 1
-            A(idx, idx+1) = -1;
-        elseif j == jmax
-            A(idx, idx-1) = -1;
-        end
-    end
-end
-
-for i = 1:imax
-    for j = 2:jmax-1
-        idx = index(i,j);
-        if i == 1
-            A(idx, idx+jmax) = -1;
+            if idx > 1
+                A(idx, idx-1) = k1;
+            else
+                A(idx, idx) = A(idx, idx) + k1;
+            end
             
-        elseif i == imax
-            A(idx, idx-jmax) = -1;
+            if idx > nj
+                A(idx, idx-nj) = k2;
+            else
+                A(idx, idx) = A(idx, idx) + k2;
+            end
+    
+            if idx < nj*ni
+                A(idx, idx+1) = k1;
+            else 
+                A(idx, idx) = A(idx, idx) + k1;
+            end
+    
+            if idx < (nj*ni - (nj - 1))
+                A(idx, idx+nj) = k2;
+            else
+                A(idx, idx) = A(idx, idx) + k2;
+            end
+        else 
+            A(idx, idx) = 1;
         end
     end
 end        
@@ -202,22 +199,22 @@ for itr = 0:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Poisson Solver
     % 
-    b = zeros(imax*jmax, 1);
-    x0 = zeros(imax*jmax, 1);
+    b = zeros(ni*nj, 1);
+    x0 = zeros(ni*nj, 1);
     for i = 2 : imax-1
-        for j = 2: jmax-1
-            idx = index(i,j);
+        for j = 2: imax-1
+            idx = index(i-1,j-1);
             b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
                        (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
         end
     end
     
 
-    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
-    %x = A\b;
+    %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
-            idx = index(i,j);
+            idx = index(i-1, j-1);
             p_prime(i,j) = x(idx);
         end
     end
