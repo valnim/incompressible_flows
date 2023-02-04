@@ -13,9 +13,9 @@ p_0 = rho_bar * V_C^2;
 
 Re = 100;
 Pr = 1;
-Cfl = 0.9;
+Cfl = 0.35;
 
-alpha_relax = 1;
+alpha_relax = 0.8;
 beta_relax = 0.2;
 
 nu = V_C * L / Re;
