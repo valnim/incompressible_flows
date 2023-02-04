@@ -355,12 +355,14 @@ for itr = 0:itr_max
         heatmap(pdisp, "Colormap", jet)
         title("Pressure");
         drawnow;
+
+        prompt = input("Enter 1 to debug or 2 to stop: ");
+        if prompt == 1
+            disp('');
+        elseif prompt == 2
+            break;
+        end
     end
-
-    disp('');
-    disp('');
-    disp('');
-
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
