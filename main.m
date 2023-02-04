@@ -7,7 +7,7 @@ T_H = 40;
 T_C = 10;
 T_M = (T_H + T_C) / 2;
 g = 9.81;
-beta = 0.5;
+beta = 0.1;
 V_C = sqrt(g*beta*(T_H-T_C)*L);
 p_0 = rho_bar * V_C^2;
 
@@ -16,7 +16,7 @@ Pr = 1;
 Cfl = 0.9;
 
 alpha_relax = 1;
-beta_relax = 1;
+beta_relax = 0.2;
 
 nu = V_C * L / Re;
 a = nu / Pr;
@@ -366,6 +366,8 @@ for itr = 0:itr_max
         end
     end
     vdisp = flipud(vn');
+    vstardisp = flipud(v_star');
+    Tdisp = flipud(Tn');
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
