@@ -1,6 +1,6 @@
 clear vars; clc; close all;
 % 
-L = 100;
+L = 50;
 H = 2 * L;
 rho_bar = 1;
 T_H = 40;
@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 20;           % Number of Cells in X Direction
-nj = 20;           % Number of Cells in Y Direction
+ni = 15;           % Number of Cells in X Direction
+nj = 15;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -67,7 +67,7 @@ deltat = zeros(imax, jmax);
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
     for j = 2: jmax-1
-        if i (i~= 2 || j ~= 2)
+        if i (i~= 4 || j ~= 4)
             idx = index(i,j);
             k1 = deltax/deltay;
             k2 = deltay/deltax;
@@ -344,6 +344,8 @@ for itr = 0:itr_max
         uy = zeros(imax, jmax);
         vx = zeros(imax, jmax);
         quiver(xu, y, flipud(un'), uy);
+        grid on;
+        
         hold on;
         quiver(x, yv, vx, flipud(vn'));
         hold off;
@@ -363,6 +365,7 @@ for itr = 0:itr_max
             break;
         end
     end
+    vdisp = flipud(vn');
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
