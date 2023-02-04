@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 5;           % Number of Cells in X Direction
-nj = 5;           % Number of Cells in Y Direction
+ni = 20;           % Number of Cells in X Direction
+nj = 20;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -353,7 +353,9 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
     end
-
+    disp('');
+    disp('');
+    disp('');
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
