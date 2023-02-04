@@ -1,13 +1,13 @@
 clear vars; clc; close all;
 % 
-L = 100;
+L = 50;
 H = 2 * L;
 rho_bar = 1;
 T_H = 40;
 T_C = 10;
 T_M = (T_H + T_C) / 2;
 g = 9.81;
-beta = 0.5;
+beta = 0.1;
 V_C = sqrt(g*beta*(T_H-T_C)*L);
 p_0 = rho_bar * V_C^2;
 
@@ -16,14 +16,14 @@ Pr = 1;
 Cfl = 0.9;
 
 alpha_relax = 1;
-beta_relax = 1;
+beta_relax = 0.2;
 
 nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 20;           % Number of Cells in X Direction
-nj = 20;           % Number of Cells in Y Direction
+ni = 15;           % Number of Cells in X Direction
+nj = 15;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -341,6 +341,8 @@ for itr = 0:itr_max
         uy = zeros(imax, jmax);
         vx = zeros(imax, jmax);
         quiver(xu, y, flipud(un'), uy);
+        grid on;
+        
         hold on;
         quiver(x, yv, vx, flipud(vn'));
         hold off;
@@ -360,6 +362,9 @@ for itr = 0:itr_max
             break;
         end
     end
+    vdisp = flipud(vn');
+    vstardisp = flipud(v_star');
+    Tdisp = flipud(Tn');
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
