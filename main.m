@@ -338,7 +338,7 @@ for itr = 0:itr_max
         % Plot Velocities
         figure(2);
         x = linspace(1,imax, imax);
-        y = linspace(1,jmax, jmax);
+        y = linspace(jmax,1, jmax);
         xu = x + 0.5;
         yv = y + 0.5;
         uy = zeros(imax, jmax);
@@ -371,7 +371,7 @@ title("Temperature");
 % Plot Velocities
 figure(2);
 x = linspace(1,imax, imax);
-y = linspace(1,jmax, jmax);
+y = linspace(jmax,1, jmax);
 xu = x + 0.5;
 yv = y + 0.5;
 uy = zeros(imax, jmax);
