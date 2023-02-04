@@ -1,4 +1,4 @@
-clear vars; clc; close all;
+clearvars; clc; close all;
 % 
 L = 50;
 H = 2 * L;
@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 15;           % Number of Cells in X Direction
-nj = 15;           % Number of Cells in Y Direction
+ni = 5;           % Number of Cells in X Direction
+nj = 5;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -62,12 +62,15 @@ index = @(i,j) (i-1) * jmax + j;
 
 deltat = zeros(imax, jmax);
 
+ifix = 4;
+jfix = 4;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Coefficent Matrix for Poisson Equation
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
     for j = 2: jmax-1
-        if i (i~= 4 || j ~= 4)
+        if (i~= ifix || j ~= jfix)
             idx = index(i,j);
             k1 = deltax/deltay;
             k2 = deltay/deltax;
@@ -113,8 +116,8 @@ title("Koeffizentenmatrix");
 % Time Iteration
 itr_max = 80000;
 
-tol = 1e-4;
-gs_itr_max = 1e3;
+tol = 1e-3;
+gs_itr_max = 1e2;
 for itr = 0:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Calculation of lokal Timestep
@@ -188,15 +191,11 @@ for itr = 0:itr_max
     % Set Star Velocity Boundaries
     % Left Wall
     u_star(1,2:jmax-1) = 0;
-    v_star(1,2:jmax-2) = - v_star(2,2:jmax-2);
     % Right Wall
     u_star(imax-1,2:jmax-1) = 0;
-    v_star(imax,2:jmax-2) = - v_star(imax-1,2:jmax-2); 
     % Bottom Wall
-    u_star(2:imax-2,1) = - u_star(2:imax-2,2);
-    v_star(2:imax-1,1) = 0;    
+    v_star(2:imax-1,1) = 0;
     % Top Wall
-    u_star(2:imax-2,jmax) = - u_star(2:imax-2,jmax-1);
     v_star(2:imax-1,jmax-1) = 0;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,28 +205,23 @@ for itr = 0:itr_max
     x0 = zeros(imax*jmax, 1);
     for i = 2 : imax-1
         for j = 2: jmax-1
-            idx = index(i,j);
-            b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
-                       (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
+            if (i~= ifix || j ~= jfix)
+                idx = index(i,j);
+                b(idx) = ((u_star(i, j) - u_star(i-1, j)) * deltay + ...
+                           (v_star(i, j) - v_star(i, j-1)) * deltax) /  deltat(i,j);
+            end
         end
     end
     
 
-    %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
-    x = A\b;
+    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    %x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
             idx = index(i,j);
             p_prime(i,j) = x(idx);
         end
     end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Set Pressure Boundaries
-%     p_prime(1,2:jmax-1) = p_prime(2,2:jmax-1);
-%     p_prime(imax,2:jmax-1) = p_prime(imax-1,2:jmax-1);
-%     p_prime(2:imax-1,1) = p_prime(2:imax-1,2);
-%     p_prime(2:imax-1,jmax) = p_prime(2:imax-1,jmax-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Correction Step
@@ -295,14 +289,12 @@ for itr = 0:itr_max
     un(1,2:jmax-1) = 0;
     vn(1,2:jmax-2) = - vn(2,2:jmax-2);
     Tn(1,2:jmax-1) = 2 * (T_H - T_M) / (T_H - T_C) - Tn(2,2:jmax-1);
-    %Tn(1,2:jmax-1) = (T_H - T_M) / (T_H - T_C);
     pn(1,2:jmax-1) = pn(2,2:jmax-1);
     
     % Right Wall (Wall with Constant Temperature T_C)
     un(imax-1,2:jmax-1) = 0;
     vn(imax,2:jmax-2) = - vn(imax-1,2:jmax-2);
     Tn(imax,2:jmax-1) = 2 * (T_C - T_M) / (T_H - T_C) - Tn(imax-1,2:jmax-1);
-    %Tn(imax,2:jmax-1) = (T_C - T_M) / (T_H - T_C);
     pn(imax,2:jmax-1) = pn(imax-1,2:jmax-1);
     
     % Bottom Wall   (adiabat Wall)
@@ -340,7 +332,7 @@ for itr = 0:itr_max
         x = linspace(1,imax, imax);
         y = linspace(jmax,1, jmax);
         xu = x + 0.5;
-        yv = y + 0.5;
+        yv = y - 0.5;
         uy = zeros(imax, jmax);
         vx = zeros(imax, jmax);
         quiver(xu, y, flipud(un'), uy);
@@ -358,12 +350,12 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
 
-        prompt = input("Enter 1 to debug or 2 to stop: ");
-        if prompt == 1
-            disp('');
-        elseif prompt == 2
-            break;
-        end
+%         prompt = input("Enter 1 to debug or 2 to stop: ");
+%         if prompt == 1
+%             disp('');
+%         elseif prompt == 2
+%             break;
+%         end
     end
     vdisp = flipud(vn');
     vstardisp = flipud(v_star');
