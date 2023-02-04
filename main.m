@@ -13,7 +13,7 @@ p_0 = rho_bar * V_C^2;
 
 Re = 100;
 Pr = 1;
-Cfl = 0.25;
+Cfl = 0.9;
 
 alpha_relax = 1;
 beta_relax = 1;
@@ -138,10 +138,10 @@ for itr = 0:itr_max
 
             F1n_3 = (pn(i+1,j)-pn(i,j))*deltay;
 
-            F1n_4 = (((un(i+1, j) - un(i,j))/deltax) +  ...
+            F1n_4 = (((un(i+1, j) - un(i,j))/deltax) -  ...
                 ((un(i, j) - un(i-1,j))/deltax))* deltay;
 
-            F1n_5 = (((un(i, j+1) - un(i,j))/deltay) +  ...
+            F1n_5 = (((un(i, j+1) - un(i,j))/deltay) -  ...
                 ((un(i, j) - un(i,j-1))/deltay))* deltax;
 
             F1n(i,j) = - F1n_1 - F1n_2 - F1n_3 + (F1n_4 + F1n_5) / Re;
@@ -160,15 +160,15 @@ for itr = 0:itr_max
             F2n_1 = (((un(i, j) + un(i,j+1))/2) * ((vn(i, j) + vn(i+1,j))/2) - ...
                 ((un(i-1, j+1) + un(i-1,j))/2) * ((vn(i-1, j) + vn(i,j))/2)) * deltax;
 
-            F2n_2 = (((vn(i, j+1) - vn(i,j))/2)^2 -  ...
+            F2n_2 = (((vn(i, j+1) + vn(i,j))/2)^2 -  ...
                 ((vn(i, j) + vn(i,j-1))/2)^2)* deltay;
 
             F2n_3 = (pn(i,j+1)-pn(i,j))*deltax;
 
-            F2n_4 = (((vn(i+1, j) - vn(i,j))/deltax) +  ...
+            F2n_4 = (((vn(i+1, j) - vn(i,j))/deltax) -  ...
                 ((vn(i, j) - vn(i-1,j))/deltax))* deltay;
 
-            F2n_5 = (((vn(i, j+1) - vn(i,j))/deltay) +  ...
+            F2n_5 = (((vn(i, j+1) - vn(i,j))/deltay) -  ...
                 ((vn(i, j) - vn(i,j-1))/deltay))* deltax;
 
             F2n_6 = (Tn(i, j+1) + Tn(i, j)) / 2 * deltax * deltay;
@@ -353,9 +353,11 @@ for itr = 0:itr_max
         title("Pressure");
         drawnow;
     end
+
     disp('');
     disp('');
     disp('');
+
 end
 disp('finished calculation');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
