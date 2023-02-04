@@ -158,10 +158,10 @@ for itr = 0:itr_max
         for j = 2: jmax-2
             % RHS Term for Y Impulse
             F2n_1 = (((un(i, j) + un(i,j+1))/2) * ((vn(i, j) + vn(i+1,j))/2) - ...
-                ((un(i-1, j+1) + un(i-1,j))/2) * ((vn(i-1, j) + vn(i,j))/2)) * deltax;
+                ((un(i-1, j+1) + un(i-1,j))/2) * ((vn(i-1, j) + vn(i,j))/2)) * deltay;
 
             F2n_2 = (((vn(i, j+1) + vn(i,j))/2)^2 -  ...
-                ((vn(i, j) + vn(i,j-1))/2)^2)* deltay;
+                ((vn(i, j) + vn(i,j-1))/2)^2)* deltax;
 
             F2n_3 = (pn(i,j+1)-pn(i,j))*deltax;
 
