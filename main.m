@@ -73,7 +73,7 @@ k2 = deltay/deltax;
 for i = 1 : ni
     for j = 1: nj
         idx = index(i,j);
-        if i ~= 4 || j ~= 4
+        if i ~= ifix || j ~= jfix
             A(idx, idx) = -2 *(k1 + k2);
             if idx > 1
                 A(idx, idx-1) = k1;
