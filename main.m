@@ -22,8 +22,8 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 50;           % Number of Cells in X Direction
-nj = 50;           % Number of Cells in Y Direction
+ni = 30;           % Number of Cells in X Direction
+nj = 30;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -367,7 +367,7 @@ for itr = 1:itr_max
         title("Correction pressure residual");
         drawnow;
     end
-    if contiplot(itr) < conti_conv && itr > 5e2 && p_primeplot < p_conv
+    if contiplot(itr) < conti_conv && itr > 5e2 && p_primeplot(itr) < p_conv
         break;
     end
 
