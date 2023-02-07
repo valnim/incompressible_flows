@@ -318,7 +318,7 @@ for itr = 1:itr_max
     conti = NaN(imax,jmax);
     for i = 2 : imax-1
         for j = 2: jmax-1
-            conti(i,j) = ((un(i, j) - un(i-1, j)) * deltay + ...
+            conti(i,j) = abs((un(i, j) - un(i-1, j)) * deltay + ...
                        (vn(i, j) - vn(i, j-1)) * deltax);
         end
     end
@@ -428,6 +428,12 @@ quiver(x, y, udisp(2:imax-1, 2:jmax-1), vdisp(2:imax-1, 2:jmax-1));
 title("Velocity");
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculated Nusselt Number
+Nu = 0;
+for j = 2 : jmax-1
+    Nu = Nu + (Tn(1,j) - Tn(2,j))/deltax*deltay;
+end
+disp(Nu);
 
 
