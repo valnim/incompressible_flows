@@ -384,7 +384,7 @@ heatmap(Tdisp, "Colormap", jet)
 title("Temperature");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot Velocities
+% Plot Velocity components
 figure(2);
 x = linspace(1,imax, imax);
 y = linspace(jmax,1, jmax);
@@ -407,10 +407,15 @@ pdisp = flipud(pdisp');
 heatmap(pdisp, "Colormap", jet)
 title("Pressure");
 
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot cell velocity
+figure(7);
+x = linspace(0,1, imax-2);
+y = linspace(2,0, jmax-2);
+udisp = flipud(un');
+vdisp = flipud(vn');
+quiver(x, y, udisp(2:imax-1, 2:jmax-1), vdisp(2:imax-1, 2:jmax-1));
+title("Velocity");
 
 
 
