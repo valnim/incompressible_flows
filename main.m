@@ -102,7 +102,7 @@ title("Koeffizentenmatrix");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation Parameters
-Re = 100;
+Re = 200;
 Pr = 1;
 Cfl = 0.35;
 
@@ -116,7 +116,7 @@ p_primeplot = zeros(1, itr_max);
 conti_conv = 3*1e-10;
 p_conv = 3*1e-4;
 
-tol = 2e-4;
+tol = 4e-4;
 gs_itr_max = 1e4;
 
 
