@@ -114,7 +114,7 @@ itr_max = 80000;
 contiplot = zeros(1, itr_max);
 p_primeplot = zeros(1, itr_max);
 conti_conv = 3*1e-10;
-p_conv = 3*1e-4;
+p_conv = 3*1e-10;
 
 tol = 4e-4;
 gs_itr_max = 1e4;
