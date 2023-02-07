@@ -407,6 +407,16 @@ pdisp = flipud(pdisp');
 heatmap(pdisp, "Colormap", jet)
 title("Pressure");
 
+% Plot Continuity Residual
+figure(5);
+iterations = linspace(1,itr,itr);
+semilogy(iterations,contiplot(1:itr));
+title("Continuity residual");
+% Plot Correction Pressure Residual
+figure(6);
+semilogy(iterations,p_primeplot(1:itr));
+title("Correction pressure residual");
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot cell velocity
 figure(7);
