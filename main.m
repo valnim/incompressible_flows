@@ -1,34 +1,19 @@
 clearvars; clc; close all;
-% 
-L = 50;
-H = 2 * L;
-rho_bar = 1;
+
+% Temperature Definition
 T_H = 40;
 T_C = 10;
 T_M = (T_H + T_C) / 2;
-g = 9.81;
-beta = 0.1;
-V_C = sqrt(g*beta*(T_H-T_C)*L);
-p_0 = rho_bar * V_C^2;
 
-Re = 10;
-Pr = 1;
-Cfl = 0.35;
-
-alpha_relax = 0.9;
-beta_relax = 0.5;
-
-nu = V_C * L / Re;
-a = nu / Pr;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialziation of Grid
 ni = 30;           % Number of Cells in X Direction
 nj = 30;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
-deltax = L / ni / L;
-deltay = H / nj / L;
+deltax = 1 / ni;
+deltay = 2 / nj;
 
 % Initialization of Fluid parameter arrays
 unm1 = zeros(imax, jmax);
@@ -66,7 +51,7 @@ ifix = 4;
 jfix = 4;
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coefficent Matrix for Poisson Equation
 A = eye(imax*jmax, imax*jmax);
 for i = 2 : imax-1
@@ -84,7 +69,7 @@ for i = 2 : imax-1
     end
 end
 
-% % Pressure Boundaries
+% Pressure Boundaries
 for i = 2:imax-1
     for j = 1:jmax
         idx = index(i,j);
@@ -114,7 +99,16 @@ figure(4);
 heatmap(A, "Colormap", jet)
 title("Koeffizentenmatrix");
 
-% Time Iteration
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simulation Parameters
+Re = 10;
+Pr = 1;
+Cfl = 0.35;
+
+alpha_relax = 0.9;
+beta_relax = 0.5;
+
 itr_max = 80000;
 
 contiplot = zeros(1, itr_max);
@@ -122,8 +116,12 @@ p_primeplot = zeros(1, itr_max);
 conti_conv = 5*1e-10;
 p_conv = 5*1e-4;
 
-tol = 1e-3;
-gs_itr_max = 1e2;
+tol = 3e-4;
+gs_itr_max = 1e3;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simulation
 for itr = 1:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Calculation of lokal Timestep
@@ -220,8 +218,8 @@ for itr = 1:itr_max
     end
     
 
-    %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
-    x = A\b;
+    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    %x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
             idx = index(i,j);
@@ -324,8 +322,8 @@ for itr = 1:itr_max
                        (vn(i, j) - vn(i, j-1)) * deltax);
         end
     end
-    contiplot(itr) = max(conti, [], "all");
-    p_primeplot(itr) = max(p_prime, [], "all");
+    contiplot(itr) = max(abs(conti), [], "all");
+    p_primeplot(itr) = max(abs(p_prime), [], "all");
 
     if mod(itr, 200) == 0
         % Plot Temperature
