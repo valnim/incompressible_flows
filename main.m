@@ -7,8 +7,8 @@ T_M = (T_H + T_C) / 2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialziation of Grid
-ni = 30;           % Number of Cells in X Direction
-nj = 30;           % Number of Cells in Y Direction
+ni = 50;           % Number of Cells in X Direction
+nj = 50;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -102,7 +102,7 @@ title("Koeffizentenmatrix");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation Parameters
-Re = 10;
+Re = 100;
 Pr = 1;
 Cfl = 0.35;
 
@@ -113,11 +113,11 @@ itr_max = 80000;
 
 contiplot = zeros(1, itr_max);
 p_primeplot = zeros(1, itr_max);
-conti_conv = 5*1e-10;
-p_conv = 5*1e-4;
+conti_conv = 3*1e-10;
+p_conv = 3*1e-4;
 
-tol = 3e-4;
-gs_itr_max = 1e3;
+tol = 2e-4;
+gs_itr_max = 1e4;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
