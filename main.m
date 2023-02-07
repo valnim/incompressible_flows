@@ -11,7 +11,7 @@ beta = 0.1;
 V_C = sqrt(g*beta*(T_H-T_C)*L);
 p_0 = rho_bar * V_C^2;
 
-Re = 100;
+Re = 10;
 Pr = 1;
 Cfl = 0.35;
 
@@ -22,13 +22,13 @@ nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 5;           % Number of Cells in X Direction
-nj = 5;           % Number of Cells in Y Direction
+ni = 30;           % Number of Cells in X Direction
+nj = 30;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
-deltax = L / ni;
-deltay = H / nj;
+deltax = L / ni / L;
+deltay = H / nj / L;
 
 % Initialization of Fluid parameter arrays
 unm1 = zeros(imax, jmax);
@@ -125,7 +125,7 @@ for itr = 0:itr_max
         for j = 2 :jmax-1
             % Timestep calculation
             temp = (abs(un(i,j)) / deltax + ...
-                abs(vn(i,j)) / deltay + 2 * nu / deltax^2 + 2 * nu / deltay^2);
+                abs(vn(i,j)) / deltay + 2 / Re / deltax^2 + 2 / Re / deltay^2);
             deltat(i,j) = Cfl * temp^-1;
         end
     end
@@ -214,8 +214,8 @@ for itr = 0:itr_max
     end
     
 
-    x = GaussSeidel(A, b, x0, tol, gs_itr_max);
-    %x = A\b;
+    %x = GaussSeidel(A, b, x0, tol, gs_itr_max);
+    x = A\b;
     for i = 2 : imax-1
         for j = 2: jmax-1
             idx = index(i,j);
@@ -315,7 +315,7 @@ for itr = 0:itr_max
     for i = 2 : imax-1
         for j = 2: jmax-1
             conti(i,j) = ((un(i, j) - un(i-1, j)) * deltay + ...
-                       (vn(i, j) - vn(i, j-1)) * deltax) /  deltat(i,j);
+                       (vn(i, j) - vn(i, j-1)) * deltax);
         end
     end
 
