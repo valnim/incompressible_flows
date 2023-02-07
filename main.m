@@ -15,15 +15,15 @@ Re = 10;
 Pr = 1;
 Cfl = 0.35;
 
-alpha_relax = 0.8;
-beta_relax = 0.2;
+alpha_relax = 0.9;
+beta_relax = 0.5;
 
 nu = V_C * L / Re;
 a = nu / Pr;
 
 % Initialziation of Grid
-ni = 30;           % Number of Cells in X Direction
-nj = 30;           % Number of Cells in Y Direction
+ni = 50;           % Number of Cells in X Direction
+nj = 50;           % Number of Cells in Y Direction
 imax = ni + 2;      % Number of Array Elements in X Direction
 jmax = nj + 2;      % Number of Array Elements in Y Direction
 
@@ -64,6 +64,7 @@ deltat = zeros(imax, jmax);
 
 ifix = 4;
 jfix = 4;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Coefficent Matrix for Poisson Equation
@@ -116,9 +117,14 @@ title("Koeffizentenmatrix");
 % Time Iteration
 itr_max = 80000;
 
+contiplot = zeros(1, itr_max);
+p_primeplot = zeros(1, itr_max);
+conti_conv = 5*1e-10;
+p_conv = 5*1e-4;
+
 tol = 1e-3;
 gs_itr_max = 1e2;
-for itr = 0:itr_max
+for itr = 1:itr_max
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Calculation of lokal Timestep
     for i = 2 : imax-1
@@ -318,8 +324,10 @@ for itr = 0:itr_max
                        (vn(i, j) - vn(i, j-1)) * deltax);
         end
     end
+    contiplot(itr) = max(conti, [], "all");
+    p_primeplot(itr) = max(p_prime, [], "all");
 
-    if mod(itr, 100) == 0
+    if mod(itr, 200) == 0
         % Plot Temperature
         figure(1);
         Tdisp = Tn(1:imax, 1:jmax)';
@@ -348,20 +356,27 @@ for itr = 0:itr_max
         pdisp = flipud(pdisp');
         heatmap(pdisp, "Colormap", jet)
         title("Pressure");
+        % Plot Continuity Residual
+        figure(5);
+        iterations = linspace(1,itr,itr);
+        semilogy(iterations,contiplot(1:itr));
+        title("Continuity residual");
+        % Plot Correction Pressure Residual
+        figure(6);
+        semilogy(iterations,p_primeplot(1:itr));
+        title("Correction pressure residual");
         drawnow;
-
-%         prompt = input("Enter 1 to debug or 2 to stop: ");
-%         if prompt == 1
-%             disp('');
-%         elseif prompt == 2
-%             break;
-%         end
     end
-    vdisp = flipud(vn');
-    vstardisp = flipud(v_star');
-    Tdisp = flipud(Tn');
+    if contiplot(itr) < conti_conv && itr > 5e2 && p_primeplot < p_conv
+        break;
+    end
+
 end
 disp('finished calculation');
+disp('Continuity residual: ');
+disp(contiplot(itr));
+disp('Correction Pressure residual: ');
+disp(p_primeplot(itr));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot Temperature
 figure(1);
