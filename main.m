@@ -427,6 +427,16 @@ vdisp = flipud(vn');
 quiver(x, y, udisp(2:imax-1, 2:jmax-1), vdisp(2:imax-1, 2:jmax-1));
 title("Velocity");
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot streamline
+figure(8);
+[X,Y] = meshgrid(2:imax-1, 2:jmax-1); 
+udisp = un';
+vdisp = vn';
+streamslice(X,Y,udisp(2:imax-1, 2:jmax-1), vdisp(2:imax-1, 2:jmax-1));
+title("Velocity");
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculated Nusselt Number
